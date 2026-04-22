@@ -1,0 +1,308 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+  <diagram name="Page-1" id="TBK-System-v2">
+    <mxGraphModel dx="3777" dy="2326" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1400" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="req-1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Ticket Booking System — System Design&lt;/b&gt;&lt;div&gt;&lt;b&gt;A platform to discover and purchase tickets for movies, concerts, and live events.&lt;/b&gt;&lt;/div&gt;&lt;br&gt;&lt;b&gt;1. Functional Requirements&lt;/b&gt;&lt;ol&gt;&lt;li&gt;Discover events by Title, City/Location, and Date.&lt;/li&gt;&lt;li&gt;View event details: seats (available/occupied), description, cast, duration, language, rating.&lt;/li&gt;&lt;li&gt;Select a seat and complete a booking transaction.&lt;/li&gt;&lt;/ol&gt;&lt;b&gt;2. Non-Functional Requirements&lt;/b&gt;&lt;ol&gt;&lt;li&gt;Support 100 Million DAU.&lt;/li&gt;&lt;li&gt;High Availability for event search/browsing (stale reads acceptable).&lt;/li&gt;&lt;li&gt;Strong Consistency for seat booking (no double-booking).&lt;/li&gt;&lt;/ol&gt;&lt;b&gt;3. Core Entities&lt;/b&gt;&lt;ol&gt;&lt;li&gt;User&lt;/li&gt;&lt;li&gt;Event (Movie / Concert / Play)&lt;/li&gt;&lt;li&gt;Venue (Theater / Stadium / Arena)&lt;/li&gt;&lt;li&gt;Show (specific timing of event at venue)&lt;/li&gt;&lt;li&gt;Seat&lt;/li&gt;&lt;li&gt;Booking (transaction record)&lt;/li&gt;&lt;/ol&gt;&lt;b&gt;4. API Design&lt;/b&gt;&lt;ol&gt;&lt;li&gt;GET /v1/events &amp;nbsp;&amp;nbsp;(Query Params: title, city, date) → list of events&lt;/li&gt;&lt;li&gt;GET /v1/events/{event_id} → event metadata &amp;amp; description&lt;/li&gt;&lt;li&gt;GET /v1/shows/{show_id}/seats → seat map &amp;amp; availability&lt;/li&gt;&lt;li&gt;POST /v1/bookings &amp;nbsp;(Body: event_id, show_id, seat_id) → lock seat &amp;amp; initiate transaction&lt;/li&gt;&lt;/ol&gt;" vertex="1">
+          <mxGeometry height="620" width="470" x="-530" y="-120" as="geometry" />
+        </mxCell>
+        <mxCell id="client-users" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;" value="End Users" vertex="1">
+          <mxGeometry height="60" width="60" x="570" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="client-organisers" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.users;" value="Event Organisers" vertex="1">
+          <mxGeometry height="60" width="60" x="700" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="cdn-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" value="&lt;b&gt;CDN&lt;/b&gt;&lt;div&gt;(CloudFront)&lt;/div&gt;&lt;div&gt;Static Assets, Images, Posters&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="180" x="855" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cdn1" edge="1" parent="1" source="client-users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="cdn-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-users-gw" edge="1" parent="1" source="client-users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="725" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-org-gw" edge="1" parent="1" source="client-organisers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="CBHkLuaGPAtjcy-fg3xI-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="725" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="user-svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" value="&lt;b&gt;User Service&lt;/b&gt;&lt;div&gt;Registration / Login / JWT&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="170" x="340" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-user" edge="1" parent="1" source="CBHkLuaGPAtjcy-fg3xI-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="user-svc">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="255" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="user-db-img" parent="1" style="image;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="" vertex="1">
+          <mxGeometry height="50" width="38" x="420" y="518" as="geometry" />
+        </mxCell>
+        <mxCell id="user-db-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="User DB" vertex="1">
+          <mxGeometry height="20" width="70" x="510" y="513" as="geometry" />
+        </mxCell>
+        <mxCell id="e-user-db" edge="1" parent="1" source="user-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="user-db-img">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="search-svc" parent="1" style="image;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/azure2/app_services/Search_Services.svg;" value="" vertex="1">
+          <mxGeometry height="52" width="52" x="734" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="search-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;b&gt;Search Service&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="100" x="710" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-search" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="search-svc">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="725" y="290" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="es-node" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.elasticsearch_service;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="734" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="es-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Amazon&lt;br&gt;OpenSearch&lt;br&gt;(indexed by City, Date, Title)" vertex="1">
+          <mxGeometry height="40" width="130" x="700" y="555" as="geometry" />
+        </mxCell>
+        <mxCell id="e-search-es" edge="1" parent="1" source="search-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="es-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="show-svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" value="&lt;b&gt;Show Service&lt;/b&gt;&lt;div&gt;Seat Map &amp;amp; Availability&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="170" x="880" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-show" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="show-svc">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="725" y="290" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="redis-read" parent="1" style="image;sketch=0;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" value="" vertex="1">
+          <mxGeometry height="42" width="50" x="893" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="redis-read-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Redis Cache&lt;br&gt;(Seat Availability)" vertex="1">
+          <mxGeometry height="30" width="120" x="858" y="516" as="geometry" />
+        </mxCell>
+        <mxCell id="e-show-redis" edge="1" parent="1" source="show-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="redis-read">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="event-svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;" value="&lt;b&gt;Event / Catalog Service&lt;/b&gt;&lt;div&gt;Event Details, Metadata, Posters&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="200" x="1060" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-event" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="event-svc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="255" />
+              <mxPoint x="1160" y="255" />
+            </Array>
+            <mxPoint x="880" y="255" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="redis-event" parent="1" style="image;sketch=0;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" value="" vertex="1">
+          <mxGeometry height="42" width="50" x="1073" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="redis-event-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Redis Cache&lt;br&gt;(Event Details)" vertex="1">
+          <mxGeometry height="30" width="110" x="1063" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="e-event-redis" edge="1" parent="1" source="event-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="redis-event">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-node" parent="1" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.s3;fillColor=#E05243;gradientColor=none;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="1197" y="468" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="S3 &lt;br&gt;(Posters / Assets)" vertex="1">
+          <mxGeometry height="30" width="100" x="1172" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="e-event-s3" edge="1" parent="1" source="event-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="s3-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="primary-db" parent="1" style="image;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="" vertex="1">
+          <mxGeometry height="60" width="48" x="1170" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="primary-db-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;b&gt;Primary DB&lt;/b&gt;&lt;br&gt;(Bookings, Events, Shows)" vertex="1">
+          <mxGeometry height="35" width="130" x="1130" y="685" as="geometry" />
+        </mxCell>
+        <mxCell id="rr-1" parent="1" style="image;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="" vertex="1">
+          <mxGeometry height="50" width="40" x="920" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="rr-2" parent="1" style="image;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="" vertex="1">
+          <mxGeometry height="50" width="40" x="970" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="rr-3" parent="1" style="image;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="" vertex="1">
+          <mxGeometry height="50" width="40" x="1020" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="rr-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Read Replicas" vertex="1">
+          <mxGeometry height="20" width="110" x="940" y="685" as="geometry" />
+        </mxCell>
+        <mxCell id="e-primary-rr" edge="1" parent="1" source="primary-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;" target="rr-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rr-async-lbl" connectable="0" parent="e-primary-rr" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" value="Async Replication" vertex="1">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cdc-box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;" value="CDC Pipeline" vertex="1">
+          <mxGeometry height="60" width="80" x="1330" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="e-primary-cdc" edge="1" parent="1" source="primary-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="cdc-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cdc-es" edge="1" parent="1" source="cdc-box" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="es-node">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1370" y="560" />
+              <mxPoint x="764" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-event-primary" edge="1" parent="1" source="event-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="primary-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-show-rr" edge="1" parent="1" source="show-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;" target="rr-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="965" y="450" />
+              <mxPoint x="940" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="booking-svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" value="&lt;b&gt;Booking Service&lt;/b&gt;&lt;div&gt;1. Check Seat Availability&lt;/div&gt;&lt;div&gt;2. Acquire Distributed Lock&lt;/div&gt;&lt;div&gt;3. Persist Booking Record&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="210" x="570" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-booking" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="booking-svc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="760" />
+              <mxPoint x="675" y="760" />
+            </Array>
+            <mxPoint x="570" y="270" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="redis-lock" parent="1" style="image;sketch=0;aspect=fixed;html=1;align=center;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" value="" vertex="1">
+          <mxGeometry height="46" width="54" x="430" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="redis-lock-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Redis Cluster&lt;br&gt;&lt;b&gt;Distributed Seat Lock&lt;/b&gt;&lt;br&gt;(TTL-based, prevents&lt;br&gt;double booking)" vertex="1">
+          <mxGeometry height="55" width="130" x="385" y="826" as="geometry" />
+        </mxCell>
+        <mxCell id="e-booking-lock" edge="1" parent="1" source="booking-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="redis-lock">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-booking-primary" edge="1" parent="1" source="booking-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="primary-db">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="675" y="900" />
+              <mxPoint x="1194" y="900" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="payment-svc" parent="1" style="html=1;whiteSpace=wrap;strokeColor=none;fillColor=#0079D6;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;align=center;fontSize=12;outlineConnect=0;fontColor=#FFFFFF;sketch=0;shape=mxgraph.sitemap.payment;" value="Payment Service" vertex="1">
+          <mxGeometry height="70" width="120" x="440" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="e-booking-pay" edge="1" parent="1" source="booking-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="payment-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pay-gw" parent="1" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;" value="" vertex="1">
+          <mxGeometry height="55" width="55" x="300" y="965" as="geometry" />
+        </mxCell>
+        <mxCell id="pay-gw-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Payment&lt;br&gt;Gateway" vertex="1">
+          <mxGeometry height="30" width="70" x="293" y="1023" as="geometry" />
+        </mxCell>
+        <mxCell id="e-pay-gw" edge="1" parent="1" source="payment-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="pay-gw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3p-pay" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" value="3rd Party Payment&lt;br&gt;Providers&lt;br&gt;(Stripe / Razorpay)" vertex="1">
+          <mxGeometry height="60" width="150" x="130" y="968" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-3p" edge="1" parent="1" source="pay-gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="3p-pay">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-3p-gw-back" edge="1" parent="1" source="3p-pay" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" target="payment-svc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="205" y="1060" />
+              <mxPoint x="380" y="1060" />
+              <mxPoint x="380" y="1048" />
+              <mxPoint x="440" y="1048" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="success-lbl" connectable="0" parent="e-3p-gw-back" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" value="Success / Failure" vertex="1">
+          <mxGeometry relative="1" x="0.2" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ticket-svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" value="&lt;b&gt;Ticket Generation Service&lt;/b&gt;&lt;div&gt;QR Code / Barcode&lt;/div&gt;&lt;div&gt;PDF Ticket Creation&lt;/div&gt;" vertex="1">
+          <mxGeometry height="65" width="180" x="700" y="965" as="geometry" />
+        </mxCell>
+        <mxCell id="e-booking-ticket" edge="1" parent="1" source="booking-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;" target="ticket-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ticket-s3" parent="1" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.s3;fillColor=#E05243;gradientColor=none;" value="" vertex="1">
+          <mxGeometry height="45" width="45" x="945" y="975.5" as="geometry" />
+        </mxCell>
+        <mxCell id="ticket-s3-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="S3 (PDF Tickets)" vertex="1">
+          <mxGeometry height="20" width="100" x="869" y="1023" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ticket-s3" edge="1" parent="1" source="ticket-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="ticket-s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka-node" parent="1" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.kafka;" value="" vertex="1">
+          <mxGeometry height="46" width="60" x="660" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="Apache Kafka&lt;br&gt;(Event Bus)" vertex="1">
+          <mxGeometry height="30" width="110" x="635" y="1128" as="geometry" />
+        </mxCell>
+        <mxCell id="e-pay-kafka" edge="1" parent="1" source="payment-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="kafka-node">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="1100" />
+              <mxPoint x="500" y="1103" />
+              <mxPoint x="660" y="1103" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kafka-pay-lbl" connectable="0" parent="e-pay-kafka" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" value="booking_confirmed / failed" vertex="1">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="booking-consumer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Booking Status Consumer&lt;div&gt;(Updates Seat Status &amp;amp; Lock)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="55" width="150" x="840" y="1083" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kafka-consumer" edge="1" parent="1" source="kafka-node" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="booking-consumer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-consumer-primary" edge="1" parent="1" source="booking-consumer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="primary-db">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="1110" />
+              <mxPoint x="1194" y="1110" />
+              <mxPoint x="1194" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="notif-svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;" value="&lt;b&gt;Notification Service&lt;/b&gt;" vertex="1">
+          <mxGeometry height="50" width="170" x="1070" y="1085" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kafka-notif" edge="1" parent="1" source="kafka-node" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="notif-svc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="690" y="1160" />
+              <mxPoint x="1155" y="1160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="notif-providers" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;" value="Notification Providers&lt;div&gt;SMTP (Email) | FCM (Android)&lt;/div&gt;&lt;div&gt;APNS (iOS) | SMS Gateway&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="220" x="1070" y="1185" as="geometry" />
+        </mxCell>
+        <mxCell id="e-notif-providers" edge="1" parent="1" source="notif-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" target="notif-providers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CBHkLuaGPAtjcy-fg3xI-3" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;pre class=&quot;overflow-visible! px-0!&quot; data-start=&quot;139&quot; data-end=&quot;489&quot;&gt;&lt;div class=&quot;relative w-full mt-4 mb-1&quot;&gt;&lt;div class=&quot;&quot;&gt;&lt;div class=&quot;relative&quot;&gt;&lt;div class=&quot;h-full min-h-0 min-w-0&quot;&gt;&lt;div class=&quot;h-full min-h-0 min-w-0&quot;&gt;&lt;div class=&quot;border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl&quot;&gt;&lt;div class=&quot;h-full w-full border-radius-3xl bg-token-bg-elevated-secondary corner-superellipse/1.1 overflow-clip rounded-3xl lxnfua_clipPathFallback&quot;&gt;&lt;div class=&quot;relative&quot;&gt;&lt;div class=&quot;pe-11 pt-3&quot;&gt;&lt;div class=&quot;relative z-0 flex max-w-full&quot;&gt;&lt;div id=&quot;code-block-viewer&quot; dir=&quot;ltr&quot; class=&quot;q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼk ͼy&quot;&gt;&lt;div class=&quot;cm-scroller&quot;&gt;&lt;div class=&quot;cm-content q9tKkq_readonly&quot;&gt;    User                              Event&lt;br&gt;   . id                              . id&lt;br&gt;      . name                            . title&lt;br&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;    . email                           . description&lt;br&gt;     . phone                           . cast&lt;br&gt;                                           . duration&lt;br&gt;                                  &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;   . language&lt;br&gt;                                  &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt; . rating&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;&quot;&gt;&lt;div class=&quot;&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/pre&gt;&lt;br&gt;&lt;pre class=&quot;overflow-visible! px-0!&quot; data-start=&quot;491&quot; data-end=&quot;758&quot;&gt;&lt;div class=&quot;relative w-full mt-4 mb-1&quot;&gt;&lt;div class=&quot;&quot;&gt;&lt;div class=&quot;relative&quot;&gt;&lt;div class=&quot;h-full min-h-0 min-w-0&quot;&gt;&lt;div class=&quot;h-full min-h-0 min-w-0&quot;&gt;&lt;div class=&quot;border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl&quot;&gt;&lt;div class=&quot;h-full w-full border-radius-3xl bg-token-bg-elevated-secondary corner-superellipse/1.1 overflow-clip rounded-3xl lxnfua_clipPathFallback&quot;&gt;&lt;div class=&quot;pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1&quot;&gt;&lt;/div&gt;&lt;div class=&quot;relative&quot;&gt;&lt;div class=&quot;pe-11 pt-3&quot;&gt;&lt;div class=&quot;relative z-0 flex max-w-full&quot;&gt;&lt;div id=&quot;code-block-viewer&quot; dir=&quot;ltr&quot; class=&quot;q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼk ͼy&quot;&gt;&lt;div class=&quot;cm-scroller&quot;&gt;&lt;div class=&quot;cm-content q9tKkq_readonly&quot;&gt;    Venue                             Show&lt;br&gt;    . id                              . id&lt;br&gt;          . name                            . event_id&lt;br&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;  . city                            . venue_id&lt;br&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;    . address                         . start_time&lt;br&gt;                                            . end_time&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;&quot;&gt;&lt;div class=&quot;&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/pre&gt;&lt;br&gt;&lt;pre class=&quot;overflow-visible! px-0!&quot; data-start=&quot;760&quot; data-end=&quot;1118&quot;&gt;&lt;div class=&quot;relative w-full mt-4 mb-1&quot;&gt;&lt;div class=&quot;&quot;&gt;&lt;div class=&quot;relative&quot;&gt;&lt;div class=&quot;h-full min-h-0 min-w-0&quot;&gt;&lt;div class=&quot;h-full min-h-0 min-w-0&quot;&gt;&lt;div class=&quot;border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl&quot;&gt;&lt;div class=&quot;h-full w-full border-radius-3xl bg-token-bg-elevated-secondary corner-superellipse/1.1 overflow-clip rounded-3xl lxnfua_clipPathFallback&quot;&gt;&lt;div class=&quot;pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1&quot;&gt;&lt;/div&gt;&lt;div class=&quot;relative&quot;&gt;&lt;div class=&quot;pe-11 pt-3&quot;&gt;&lt;div class=&quot;relative z-0 flex max-w-full&quot;&gt;&lt;div id=&quot;code-block-viewer&quot; dir=&quot;ltr&quot; class=&quot;q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼk ͼy&quot;&gt;&lt;div class=&quot;cm-scroller&quot;&gt;&lt;div class=&quot;cm-content q9tKkq_readonly&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Seat                              Booking&lt;br&gt;    . id                              . id&lt;br&gt;         . venue_id                        . user_id&lt;br&gt;         . row_label                       . show_id&lt;br&gt;         . seat_number                     . seat_id&lt;br&gt;              . type                            . total_amount&lt;br&gt;        . status (available/locked/booked). status&lt;br&gt;                                             . timestamp&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/pre&gt;" vertex="1">
+          <mxGeometry height="5" x="-370" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="CBHkLuaGPAtjcy-fg3xI-5" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.iot_device_gateway;" value="" vertex="1">
+          <mxGeometry height="140" width="149.58" x="580" y="200" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
