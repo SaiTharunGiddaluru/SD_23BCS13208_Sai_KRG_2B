@@ -1,0 +1,312 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="notif-redis-hld">
+    <mxGraphModel dx="2313" dy="902" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title-1" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Aim:&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Design a Scalable Notification System with Redis&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="420" x="215" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="title-2" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Real-time alerts delivered to millions of users via Redis Pub/Sub, WebSockets, and async delivery workers." vertex="1">
+          <mxGeometry height="30" width="600" x="125" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="div-top" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=5;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-720" y="100" as="sourcePoint" />
+            <mxPoint x="1550" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fr-box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="30" width="260" x="-720" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-hdr" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;A. Functional Requirements&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="200" x="-700" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. Services should be able to publish notifications (order updates, alerts, promotions)." vertex="1">
+          <mxGeometry height="30" width="530" x="-680" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-2" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="2. Users should receive real-time in-app notifications via persistent WebSocket connections." vertex="1">
+          <mxGeometry height="30" width="560" x="-680" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-3" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="3. System should support multi-channel delivery: in-app, email, SMS, push." vertex="1">
+          <mxGeometry height="30" width="470" x="-680" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-4" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="4. Notifications should be persisted — users can fetch their notification history." vertex="1">
+          <mxGeometry height="30" width="490" x="-680" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-5" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="5. Users should be able to mark notifications read/unread and manage channel preferences." vertex="1">
+          <mxGeometry height="30" width="560" x="-680" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-6" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="6. System should support templated, localised notification content per user locale." vertex="1">
+          <mxGeometry height="30" width="510" x="-680" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-hdr" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;B. Non-Functional Requirements&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="220" x="-710" y="355" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. Scale: 50M+ users, peak 100k notifications/sec (flash sales, trade alerts)." vertex="1">
+          <mxGeometry height="30" width="480" x="-680" y="385" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-2a" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="2. CAP Theorem:" vertex="1">
+          <mxGeometry height="30" width="130" x="-680" y="415" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-2b" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Availability &gt;&gt;&gt; Consistency" vertex="1">
+          <mxGeometry height="30" width="200" x="-560" y="415" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-2c" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Slight delivery delay is acceptable; data loss is not. Degrade gracefully to eventual delivery." vertex="1">
+          <mxGeometry height="30" width="600" x="-620" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-3" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="3. Latency: in-app delivery &lt; 100ms,  email/SMS &lt; 5s.  Zero notification loss." vertex="1">
+          <mxGeometry height="30" width="480" x="-680" y="475" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-4" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="4. Durability: at-least-once delivery with idempotency keys to prevent duplicates." vertex="1">
+          <mxGeometry height="30" width="490" x="-680" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="30" width="140" x="60" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-hdr" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;C. Core Entities&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="65" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-1" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. User" vertex="1">
+          <mxGeometry height="30" width="70" x="85" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-2" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="2. Notification" vertex="1">
+          <mxGeometry height="30" width="100" x="85" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-3" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="3. NotificationTemplate" vertex="1">
+          <mxGeometry height="30" width="150" x="85" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-4" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="4. UserPreference" vertex="1">
+          <mxGeometry height="30" width="120" x="85" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-5" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="5. DeliveryLog" vertex="1">
+          <mxGeometry height="30" width="100" x="85" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="ce-6" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="6. Channel (in-app / email / SMS / push)" vertex="1">
+          <mxGeometry height="30" width="250" x="85" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="api-box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="30" width="140" x="370" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="api-hdr" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;D. API Design&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="110" x="375" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="api-pub-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;Publisher (internal services):&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="210" x="390" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="api-pub-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. POST /notifications/publish" vertex="1">
+          <mxGeometry height="30" width="220" x="410" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="api-pub-2" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="   body: { user_id, type, payload, channels[ ] }" vertex="1">
+          <mxGeometry height="30" width="290" x="410" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="api-con-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;Consumer (client-facing):&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="200" x="390" y="248" as="geometry" />
+        </mxCell>
+        <mxCell id="api-con-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. GET  /notifications?user_id=&amp;amp;page=&amp;amp;limit=" vertex="1">
+          <mxGeometry height="30" width="290" x="410" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="api-con-2" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="2. PATCH /notifications/:id/read" vertex="1">
+          <mxGeometry height="30" width="220" x="410" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="api-con-3" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="3. DELETE /notifications/:id" vertex="1">
+          <mxGeometry height="30" width="200" x="410" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="api-pref-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;Preferences:&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="390" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="api-pref-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. GET /users/:id/preferences" vertex="1">
+          <mxGeometry height="30" width="210" x="410" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="api-pref-2" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="2. PUT /users/:id/preferences" vertex="1">
+          <mxGeometry height="30" width="210" x="410" y="435" as="geometry" />
+        </mxCell>
+        <mxCell id="api-ws-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;Real-time:&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="110" x="390" y="472" as="geometry" />
+        </mxCell>
+        <mxCell id="api-ws-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="1. WS  /ws/notifications?token=JWT" vertex="1">
+          <mxGeometry height="30" width="250" x="410" y="502" as="geometry" />
+        </mxCell>
+        <mxCell id="div-mid" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=5;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-720" y="560" as="sourcePoint" />
+            <mxPoint x="1550" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="clients" parent="1" style="shape=mxgraph.aws4.user;sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#1A9C3E;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;pointerEvents=1;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="-560" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="clients-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;Clients&lt;/b&gt;&lt;div&gt;Mobile / Web / Desktop&lt;/div&gt;" vertex="1">
+          <mxGeometry height="40" width="160" x="-592" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw-shape" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.iot_device_gateway;" value="" vertex="1">
+          <mxGeometry height="90" width="96" x="-170" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="220" width="180" x="-210" y="595" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;API Gateway &amp;amp; Load Balancer&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="200" x="-220" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw-auth" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="- Authentication / JWT" vertex="1">
+          <mxGeometry height="30" width="160" x="-190" y="738" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw-rl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="- Rate Limiting" vertex="1">
+          <mxGeometry height="30" width="120" x="-185" y="763" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw-rt" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="- Routing to microservices" vertex="1">
+          <mxGeometry height="30" width="180" x="-193" y="788" as="geometry" />
+        </mxCell>
+        <mxCell id="e-client-gw" edge="1" parent="1" source="clients" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="apigw-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-client-gw-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="REST / WS" vertex="1">
+          <mxGeometry height="30" width="80" x="-435" y="645" as="geometry" />
+        </mxCell>
+        <mxCell id="internal-svc" parent="1" style="whiteSpace=wrap;html=1;rounded=1;fillColor=none;" value="&lt;b&gt;Internal Services&lt;/b&gt;&lt;div&gt;Order SVC / Trade SVC / Promo SVC&lt;/div&gt;&lt;div&gt;(Event Publishers)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="200" y="625" as="geometry" />
+        </mxCell>
+        <mxCell id="e-int-gw" edge="1" parent="1" source="internal-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="apigw-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-int-gw-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="POST /notifications/publish" vertex="1">
+          <mxGeometry height="30" width="200" x="10" y="625" as="geometry" />
+        </mxCell>
+        <mxCell id="notif-svc" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;b&gt;Notification Service&lt;/b&gt;&lt;div&gt;Validate · Enrich · Fan-out&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="180" x="-161" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-ns" edge="1" parent="1" source="apigw-box" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="notif-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pref-db" parent="1" style="shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Preference DB&lt;/b&gt;&lt;div&gt;PostgreSQL&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="130" x="230" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ns-pref" edge="1" parent="1" source="notif-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="pref-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ns-pref-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="check prefs / quiet hours" vertex="1">
+          <mxGeometry height="30" width="180" x="-25" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="redis-pubsub" parent="1" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;rounded=1;" value="&lt;b&gt;Redis Pub/Sub&lt;/b&gt;&lt;div&gt;Channel per user:  notif:user:{id}&lt;/div&gt;&lt;div&gt;Fire-and-forget · Sub-ms latency&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="220" x="-305" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ns-redis" edge="1" parent="1" source="notif-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="redis-pubsub">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ns-redis-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="PUBLISH" vertex="1">
+          <mxGeometry height="30" width="70" x="-155" y="953" as="geometry" />
+        </mxCell>
+        <mxCell id="ws-servers" parent="1" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;WebSocket Servers&lt;/b&gt;&lt;div&gt;(Horizontally Scaled)&lt;/div&gt;&lt;div&gt;SUBSCRIBE to user channels&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="190" x="-607" y="1010" as="geometry" />
+        </mxCell>
+        <mxCell id="e-redis-ws" edge="1" parent="1" source="redis-pubsub" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ws-servers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-redis-ws-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="SUBSCRIBE / push event" vertex="1">
+          <mxGeometry height="30" width="170" x="-470" y="963" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ws-clients" edge="1" parent="1" source="ws-servers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="clients">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-530" y="1060" />
+              <mxPoint x="-530" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-ws-clients-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="WebSocket push" vertex="1">
+          <mxGeometry height="30" width="120" x="-620" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" parent="1" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.kafka;" value="" vertex="1">
+          <mxGeometry height="50" width="67" x="-108" y="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="&lt;b&gt;Kafka&lt;/b&gt;&lt;div&gt;notification.events topic&lt;/div&gt;&lt;div&gt;Durable · 7-day retention&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="210" x="-186" y="1165" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ns-kafka" edge="1" parent="1" source="notif-svc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="kafka">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-71" y="920" />
+              <mxPoint x="-71" y="1110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-ns-kafka-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="PRODUCE (async)" vertex="1">
+          <mxGeometry height="30" width="130" x="-25" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="email-worker" parent="1" style="whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;Email Worker&lt;/b&gt;&lt;div&gt;SES / SendGrid&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="140" x="-560" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="sms-worker" parent="1" style="whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;SMS Worker&lt;/b&gt;&lt;div&gt;Twilio / SNS&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="130" x="-380" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="push-worker" parent="1" style="whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;Push Worker&lt;/b&gt;&lt;div&gt;FCM / APNs&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="130" x="-210" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="persist-worker" parent="1" style="whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;Persist Worker&lt;/b&gt;&lt;div&gt;Write to Notification DB&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="160" x="-30" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kf-email" edge="1" parent="1" source="kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="email-worker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kf-sms" edge="1" parent="1" source="kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="sms-worker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kf-push" edge="1" parent="1" source="kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="push-worker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kf-persist" edge="1" parent="1" source="kafka" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="persist-worker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kf-fan-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="consumer group fan-out" vertex="1">
+          <mxGeometry height="30" width="180" x="-200" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="notif-db" parent="1" style="shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Notification DB&lt;/b&gt;&lt;div&gt;Cassandra / DynamoDB&lt;/div&gt;&lt;div&gt;partition key = user_id&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="170" x="180" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="e-persist-db" edge="1" parent="1" source="persist-worker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="notif-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="redis-cache" parent="1" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;rounded=1;" value="&lt;b&gt;Redis Cache&lt;/b&gt;&lt;div&gt;unread:{user_id}  →  integer count&lt;/div&gt;&lt;div&gt;notifs:{user_id}  →  Sorted Set (ZADD)&lt;/div&gt;&lt;div&gt;TTL 24h · hot read path&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="250" x="180" y="1400" as="geometry" />
+        </mxCell>
+        <mxCell id="e-db-cache" edge="1" parent="1" source="notif-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="redis-cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-db-cache-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="cache warm-up" vertex="1">
+          <mxGeometry height="30" width="110" x="275" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-cache" edge="1" parent="1" source="apigw-box" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="redis-cache">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-120" y="815" />
+              <mxPoint x="560" y="815" />
+              <mxPoint x="560" y="1435" />
+              <mxPoint x="430" y="1435" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-gw-cache-lbl" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="read (GET /notifications)" vertex="1">
+          <mxGeometry height="30" width="190" x="570" y="1110" as="geometry" />
+        </mxCell>
+        <mxCell id="div-dm" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=5;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-720" y="1510" as="sourcePoint" />
+            <mxPoint x="1550" y="1510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4bg2fdMJ3XgiNKith0Gf-1" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Redis Pub/Sub vs Kafka direct: Redis gives sub-ms in-app delivery; Kafka adds durability. Both used together — not either/or." vertex="1">
+          <mxGeometry height="30" width="680" x="-575" y="1540" as="geometry" />
+        </mxCell>
+        <mxCell id="4bg2fdMJ3XgiNKith0Gf-2" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Cassandra vs PostgreSQL: Cassandra scales writes horizontally (partition key = user_id). PostgreSQL preferred for &lt; 10M users (simpler ops)." vertex="1">
+          <mxGeometry height="30" width="700" x="-580" y="1570" as="geometry" />
+        </mxCell>
+        <mxCell id="4bg2fdMJ3XgiNKith0Gf-3" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="SSE vs WebSockets: SSE is unidirectional, simpler, HTTP/2 multiplexed. Use SSE if client never sends on the same channel; WS if bidirectional (ack, chat)." vertex="1">
+          <mxGeometry height="30" width="720" x="-575" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="4bg2fdMJ3XgiNKith0Gf-4" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Redis Sorted Set vs Cassandra for history: Redis for hot recent 20; Cassandra for full history. Two-tier read path keeps P99 &lt; 10ms for the common case." vertex="1">
+          <mxGeometry height="30" width="710" x="-575" y="1630" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

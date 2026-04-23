@@ -1,0 +1,364 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="notif-redis-lld-v2">
+    <mxGraphModel dx="3770" dy="1611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════ TITLE ═══════ -->
+        <mxCell id="t1" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;" value="Low Level Design — Notification System with Redis" vertex="1">
+          <mxGeometry height="40" width="600" x="130" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;strokeColor=none;fillColor=none;fontSize=11;" value="Covers: Class Design · DB Schema · Sequence Flows · Redis Key Design · Worker Logic · Error Handling" vertex="1">
+          <mxGeometry height="25" width="640" x="50" y="48" as="geometry" />
+        </mxCell>
+
+        <mxCell id="div0" parent="1" style="endArrow=none;html=1;strokeWidth=5;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-800" y="80" as="sourcePoint" />
+            <mxPoint x="1700" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             A. CLASS DESIGN
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="a-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="A. Class / Interface Design" vertex="1">
+          <mxGeometry height="24" width="260" x="-800" y="88" as="geometry" />
+        </mxCell>
+
+        <!-- NotificationService — dark amber bg, white text -->
+        <mxCell id="cls-ns" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#5a3e00;fillColor=#8a5c00;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;&lt;&lt;Service&gt;&gt; NotificationService&lt;/b&gt;&lt;hr style=&apos;border-color:#ffcc44;&apos;/&gt;&lt;i&gt;- redisClient: RedisClient&lt;br&gt;- kafkaProducer: KafkaProducer&lt;br&gt;- prefRepo: UserPreferenceRepository&lt;br&gt;- templateEngine: TemplateEngine&lt;/i&gt;&lt;hr style=&apos;border-color:#ffcc44;&apos;/&gt;+ publish(req: PublishRequest): void&lt;br&gt;+ validateAndEnrich(req): Notification&lt;br&gt;+ fanOut(n: Notification): void&lt;br&gt;+ checkPreference(userId, channel): boolean&lt;br&gt;+ buildPayload(template, data): string" vertex="1">
+          <mxGeometry height="175" width="290" x="-800" y="118" as="geometry" />
+        </mxCell>
+
+        <!-- RedisPublisher — dark red -->
+        <mxCell id="cls-rp" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#6b0000;fillColor=#a30000;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;&lt;&lt;Component&gt;&gt; RedisPublisher&lt;/b&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;&lt;i&gt;- client: ioredis.Redis&lt;br&gt;- channelPrefix: string = &quot;notif:user:&quot;&lt;/i&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;+ publish(userId: string, payload: string): void&lt;br&gt;+ getChannel(userId): string&lt;br&gt;+ pingHealth(): boolean" vertex="1">
+          <mxGeometry height="130" width="270" x="-800" y="308" as="geometry" />
+        </mxCell>
+
+        <!-- WebSocketManager — dark green -->
+        <mxCell id="cls-ws" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#1a4a1a;fillColor=#1e6b1e;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;&lt;&lt;Component&gt;&gt; WebSocketManager&lt;/b&gt;&lt;hr style=&apos;border-color:#88ff88;&apos;/&gt;&lt;i&gt;- redisSubscriber: RedisSubscriber&lt;br&gt;- socketMap: Map&amp;lt;userId, Socket&amp;gt;&lt;br&gt;- heartbeatInterval: number&lt;/i&gt;&lt;hr style=&apos;border-color:#88ff88;&apos;/&gt;+ onConnect(socket: Socket): void&lt;br&gt;+ onDisconnect(userId: string): void&lt;br&gt;+ subscribeChannel(userId): void&lt;br&gt;+ unsubscribeChannel(userId): void&lt;br&gt;+ sendToUser(userId, payload): void&lt;br&gt;+ handleHeartbeat(socket): void" vertex="1">
+          <mxGeometry height="168" width="280" x="-800" y="453" as="geometry" />
+        </mxCell>
+
+        <!-- KafkaProducer — dark purple -->
+        <mxCell id="cls-kp" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#2e0050;fillColor=#4a007a;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;&lt;&lt;Component&gt;&gt; KafkaProducer&lt;/b&gt;&lt;hr style=&apos;border-color:#cc88ff;&apos;/&gt;&lt;i&gt;- producer: Kafka.Producer&lt;br&gt;- topic: string = &quot;notification.events&quot;&lt;/i&gt;&lt;hr style=&apos;border-color:#cc88ff;&apos;/&gt;+ send(event: NotificationEvent): void&lt;br&gt;+ sendBatch(events: NotificationEvent[]): void&lt;br&gt;+ flush(): Promise&amp;lt;void&amp;gt;" vertex="1">
+          <mxGeometry height="130" width="260" x="-800" y="636" as="geometry" />
+        </mxCell>
+
+        <!-- BaseWorker — dark navy -->
+        <mxCell id="cls-bw" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#001a40;fillColor=#003070;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;&lt;&lt;abstract&gt;&gt; BaseWorker&lt;/b&gt;&lt;hr style=&apos;border-color:#88bbff;&apos;/&gt;&lt;i&gt;- consumer: KafkaConsumer&lt;br&gt;- dlqProducer: KafkaProducer&lt;br&gt;- maxRetries: int = 3&lt;/i&gt;&lt;hr style=&apos;border-color:#88bbff;&apos;/&gt;# abstract deliver(n: Notification): void&lt;br&gt;+ consume(): void  // main loop&lt;br&gt;+ handleError(e, n): void  // retry / DLQ&lt;br&gt;+ checkIdempotency(key): boolean&lt;br&gt;+ ack(): void" vertex="1">
+          <mxGeometry height="155" width="270" x="-800" y="782" as="geometry" />
+        </mxCell>
+
+        <!-- Concrete workers — dark teal -->
+        <mxCell id="cls-ew" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#003333;fillColor=#005555;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;EmailWorker&lt;/b&gt; extends BaseWorker&lt;hr style=&apos;border-color:#44dddd;&apos;/&gt;- sesClient: AWS.SES&lt;br&gt;+ deliver(n): void&lt;br&gt;  // template &gt; SES.sendEmail" vertex="1">
+          <mxGeometry height="90" width="200" x="-800" y="952" as="geometry" />
+        </mxCell>
+        <mxCell id="cls-sw" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#003333;fillColor=#005555;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;SmsWorker&lt;/b&gt; extends BaseWorker&lt;hr style=&apos;border-color:#44dddd;&apos;/&gt;- twilioClient: Twilio&lt;br&gt;+ deliver(n): void&lt;br&gt;  // Twilio.messages.create" vertex="1">
+          <mxGeometry height="90" width="200" x="-565" y="952" as="geometry" />
+        </mxCell>
+        <mxCell id="cls-pw" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#003333;fillColor=#005555;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;PushWorker&lt;/b&gt; extends BaseWorker&lt;hr style=&apos;border-color:#44dddd;&apos;/&gt;- fcmClient: FCM&lt;br&gt;+ deliver(n): void&lt;br&gt;  // FCM.send / APNs.send" vertex="1">
+          <mxGeometry height="90" width="200" x="-340" y="952" as="geometry" />
+        </mxCell>
+        <mxCell id="cls-persistw" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#003333;fillColor=#005555;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;PersistWorker&lt;/b&gt; extends BaseWorker&lt;hr style=&apos;border-color:#44dddd;&apos;/&gt;- cassandraClient: Cassandra&lt;br&gt;- redisCache: RedisCache&lt;br&gt;+ deliver(n): void // write DB + cache" vertex="1">
+          <mxGeometry height="90" width="220" x="-115" y="952" as="geometry" />
+        </mxCell>
+
+        <!-- inheritance arrows -->
+        <mxCell id="e-bw-ew" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;strokeColor=#88bbff;" edge="1" source="cls-bw" target="cls-ew"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e-bw-sw" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;strokeColor=#88bbff;" edge="1" source="cls-bw" target="cls-sw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e-bw-pw" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;strokeColor=#88bbff;" edge="1" source="cls-bw" target="cls-pw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e-bw-persistw" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;strokeColor=#88bbff;" edge="1" source="cls-bw" target="cls-persistw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e-ns-rp" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;strokeColor=#ffcc44;" edge="1" source="cls-ns" target="cls-rp"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             B. DB SCHEMA
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="b-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="B. Database Schema (Cassandra + PostgreSQL)" vertex="1">
+          <mxGeometry height="24" width="360" x="100" y="88" as="geometry" />
+        </mxCell>
+
+        <!-- notifications — Cassandra, dark blue -->
+        <mxCell id="tbl-notif" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#001a40;fillColor=#003070;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;notifications  (Cassandra)&lt;/b&gt;&lt;hr style=&apos;border-color:#88bbff;&apos;/&gt;notification_id  UUID         PK (clustering)&lt;br&gt;user_id          UUID         partition key&lt;br&gt;type             TEXT         order_update | alert | promo&lt;br&gt;channel          TEXT         in_app | email | sms | push&lt;br&gt;payload          TEXT         (JSON blob)&lt;br&gt;status           TEXT         pending | sent | failed&lt;br&gt;idempotency_key  TEXT         UNIQUE&lt;br&gt;read_at          TIMESTAMP&lt;br&gt;created_at       TIMESTAMP    clustering DESC" vertex="1">
+          <mxGeometry height="200" width="350" x="100" y="118" as="geometry" />
+        </mxCell>
+
+        <!-- user_preferences — dark green -->
+        <mxCell id="tbl-pref" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#1a4a1a;fillColor=#1e6b1e;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;user_preferences  (PostgreSQL)&lt;/b&gt;&lt;hr style=&apos;border-color:#88ff88;&apos;/&gt;pref_id      UUID      PK  DEFAULT gen_random_uuid()&lt;br&gt;user_id      UUID      FK  REFERENCES users(id)&lt;br&gt;channel      TEXT      CHECK IN (in_app,email,sms,push)&lt;br&gt;enabled      BOOLEAN   DEFAULT true&lt;br&gt;quiet_from   TIME      e.g. 22:00&lt;br&gt;quiet_to     TIME      e.g. 07:00&lt;br&gt;locale       VARCHAR(8) DEFAULT 'en-US'&lt;br&gt;updated_at   TIMESTAMP DEFAULT now()&lt;br&gt;UNIQUE (user_id, channel)" vertex="1">
+          <mxGeometry height="200" width="360" x="100" y="338" as="geometry" />
+        </mxCell>
+
+        <!-- delivery_logs — dark purple -->
+        <mxCell id="tbl-log" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#2e0050;fillColor=#4a007a;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;delivery_logs  (PostgreSQL)&lt;/b&gt;&lt;hr style=&apos;border-color:#cc88ff;&apos;/&gt;log_id           UUID       PK&lt;br&gt;notification_id  UUID       FK&lt;br&gt;channel          TEXT&lt;br&gt;status           TEXT       sent | failed | retrying&lt;br&gt;attempt_count    INT        DEFAULT 0&lt;br&gt;last_attempt_at  TIMESTAMP&lt;br&gt;error_message    TEXT&lt;br&gt;INDEX (notification_id, channel)" vertex="1">
+          <mxGeometry height="178" width="330" x="100" y="558" as="geometry" />
+        </mxCell>
+
+        <!-- notification_templates — dark amber -->
+        <mxCell id="tbl-tmpl" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#5a3e00;fillColor=#8a5c00;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;notification_templates  (PostgreSQL)&lt;/b&gt;&lt;hr style=&apos;border-color:#ffcc44;&apos;/&gt;template_id   UUID     PK&lt;br&gt;type          TEXT     order_update | alert | promo&lt;br&gt;channel       TEXT&lt;br&gt;locale        VARCHAR(8)&lt;br&gt;subject       TEXT&lt;br&gt;body_template TEXT     (Mustache / Handlebars)&lt;br&gt;UNIQUE (type, channel, locale)" vertex="1">
+          <mxGeometry height="162" width="325" x="100" y="756" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             C. REDIS KEY DESIGN
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="c-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="C. Redis Key Design" vertex="1">
+          <mxGeometry height="24" width="220" x="530" y="88" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis-keys" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#6b0000;fillColor=#a30000;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;Pub/Sub Channels&lt;/b&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;notif:user:{userId}&lt;br&gt;  Type: Pub/Sub channel&lt;br&gt;  Purpose: Fan-out to connected WS nodes&lt;br&gt;  TTL: none (ephemeral)&lt;br&gt;&lt;br&gt;&lt;b&gt;Unread Counter&lt;/b&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;unread:{userId}&lt;br&gt;  Type: String (integer)&lt;br&gt;  Cmd: INCR on delivery,  SET 0 on read-all&lt;br&gt;  TTL: 7 days&lt;br&gt;&lt;br&gt;&lt;b&gt;Recent Notifications (hot path)&lt;/b&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;notifs:{userId}&lt;br&gt;  Type: Sorted Set&lt;br&gt;  Score: epoch timestamp (ms)&lt;br&gt;  Member: JSON-serialised Notification&lt;br&gt;  Cmd: ZADD notifs:{id} {ts} {payload}&lt;br&gt;  Read: ZREVRANGE notifs:{id} 0 19  // top 20&lt;br&gt;  TTL: 24 hours&lt;br&gt;&lt;br&gt;&lt;b&gt;Rate Limiter&lt;/b&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;rate:{userId}:{channel}&lt;br&gt;  Type: String (integer)&lt;br&gt;  Cmd: INCR + EXPIRE 60s&lt;br&gt;  Threshold: 10 per minute per channel&lt;br&gt;&lt;br&gt;&lt;b&gt;Idempotency Guard&lt;/b&gt;&lt;hr style=&apos;border-color:#ff9999;&apos;/&gt;idem:{idempotency_key}&lt;br&gt;  Type: String&lt;br&gt;  Cmd: SET NX EX 86400&lt;br&gt;  Purpose: prevent duplicate processing" vertex="1">
+          <mxGeometry height="500" width="330" x="530" y="118" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             D. MODELS
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="d-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="D. Request / Event Models" vertex="1">
+          <mxGeometry height="24" width="240" x="940" y="88" as="geometry" />
+        </mxCell>
+
+        <mxCell id="model-pr" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#5a3e00;fillColor=#8a5c00;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;PublishRequest  (REST body)&lt;/b&gt;&lt;hr style=&apos;border-color:#ffcc44;&apos;/&gt;{&lt;br&gt;  user_id:         UUID&lt;br&gt;  type:            string   // e.g. order_update&lt;br&gt;  payload:         object   // template variables&lt;br&gt;  channels:        string[] // [&quot;in_app&quot;,&quot;email&quot;]&lt;br&gt;  idempotency_key: string   // client-supplied&lt;br&gt;  priority:        &quot;high&quot; | &quot;normal&quot;&lt;br&gt;}" vertex="1">
+          <mxGeometry height="158" width="300" x="940" y="118" as="geometry" />
+        </mxCell>
+
+        <mxCell id="model-notif" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#001a40;fillColor=#003070;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;Notification  (internal / Kafka event)&lt;/b&gt;&lt;hr style=&apos;border-color:#88bbff;&apos;/&gt;{&lt;br&gt;  notification_id:  UUID&lt;br&gt;  user_id:          UUID&lt;br&gt;  type:             string&lt;br&gt;  channel:          string&lt;br&gt;  rendered_body:    string  // post-template&lt;br&gt;  subject:          string  // email only&lt;br&gt;  status:           string&lt;br&gt;  idempotency_key:  string&lt;br&gt;  created_at:       ISO8601&lt;br&gt;  priority:         string&lt;br&gt;}" vertex="1">
+          <mxGeometry height="198" width="300" x="940" y="292" as="geometry" />
+        </mxCell>
+
+        <mxCell id="model-ws" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#1a4a1a;fillColor=#1e6b1e;fontColor=#ffffff;rounded=0;" value="&lt;b&gt;WebSocket Push Payload&lt;/b&gt;&lt;hr style=&apos;border-color:#88ff88;&apos;/&gt;{&lt;br&gt;  event:           &quot;notification&quot;&lt;br&gt;  notification_id: UUID&lt;br&gt;  type:            string&lt;br&gt;  body:            string&lt;br&gt;  unread_count:    int&lt;br&gt;  timestamp:       ISO8601&lt;br&gt;}" vertex="1">
+          <mxGeometry height="152" width="280" x="940" y="506" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ DIVIDER ═══ -->
+        <mxCell id="div1" parent="1" style="endArrow=none;html=1;strokeWidth=5;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-800" y="1070" as="sourcePoint" />
+            <mxPoint x="1700" y="1070" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             E. SEQUENCE — PUBLISH FLOW
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="e-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="E. Sequence — POST /notifications/publish" vertex="1">
+          <mxGeometry height="24" width="400" x="-800" y="1078" as="geometry" />
+        </mxCell>
+
+        <!-- actors -->
+        <mxCell id="sq-caller" parent="1" style="whiteSpace=wrap;html=1;fillColor=#8a5c00;fontColor=#ffffff;strokeColor=#5a3e00;fontStyle=1;" value="Internal SVC" vertex="1"><mxGeometry height="36" width="110" x="-800" y="1108" as="geometry"/></mxCell>
+        <mxCell id="sq-gw" parent="1" style="whiteSpace=wrap;html=1;fillColor=#003070;fontColor=#ffffff;strokeColor=#001a40;fontStyle=1;" value="API Gateway" vertex="1"><mxGeometry height="36" width="110" x="-650" y="1108" as="geometry"/></mxCell>
+        <mxCell id="sq-ns" parent="1" style="whiteSpace=wrap;html=1;fillColor=#8a5c00;fontColor=#ffffff;strokeColor=#5a3e00;fontStyle=1;" value="Notif Service" vertex="1"><mxGeometry height="36" width="110" x="-500" y="1108" as="geometry"/></mxCell>
+        <mxCell id="sq-prefdb" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1e6b1e;fontColor=#ffffff;strokeColor=#1a4a1a;fontStyle=1;" value="Pref DB" vertex="1"><mxGeometry height="36" width="100" x="-350" y="1108" as="geometry"/></mxCell>
+        <mxCell id="sq-redis" parent="1" style="whiteSpace=wrap;html=1;fillColor=#a30000;fontColor=#ffffff;strokeColor=#6b0000;fontStyle=1;" value="Redis Pub/Sub" vertex="1"><mxGeometry height="36" width="120" x="-210" y="1108" as="geometry"/></mxCell>
+        <mxCell id="sq-kafka" parent="1" style="whiteSpace=wrap;html=1;fillColor=#4a007a;fontColor=#ffffff;strokeColor=#2e0050;fontStyle=1;" value="Kafka" vertex="1"><mxGeometry height="36" width="90" x="-55" y="1108" as="geometry"/></mxCell>
+
+        <!-- lifelines -->
+        <mxCell id="ll1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-745" y="1144" as="sourcePoint"/><mxPoint x="-745" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ll2" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-595" y="1144" as="sourcePoint"/><mxPoint x="-595" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ll3" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-445" y="1144" as="sourcePoint"/><mxPoint x="-445" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ll4" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-300" y="1144" as="sourcePoint"/><mxPoint x="-300" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ll5" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-150" y="1144" as="sourcePoint"/><mxPoint x="-150" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ll6" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-10" y="1144" as="sourcePoint"/><mxPoint x="-10" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- sequence arrows -->
+        <mxCell id="arr-s1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-745" y="1168" as="sourcePoint"/><mxPoint x="-597" y="1168" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s1" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="1. POST /notifications/publish" vertex="1"><mxGeometry height="16" width="180" x="-750" y="1150" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s2" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-595" y="1196" as="sourcePoint"/><mxPoint x="-447" y="1196" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s2" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="2. route + auth check" vertex="1"><mxGeometry height="16" width="160" x="-640" y="1178" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s3" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-445" y="1224" as="sourcePoint"/><mxPoint x="-302" y="1224" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s3" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="3. SELECT prefs WHERE user_id=?" vertex="1"><mxGeometry height="16" width="195" x="-480" y="1206" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s3r" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-302" y="1248" as="sourcePoint"/><mxPoint x="-445" y="1248" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s3r" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="4. prefs row" vertex="1"><mxGeometry height="16" width="90" x="-390" y="1230" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s4" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#a30000;strokeWidth=2;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-445" y="1274" as="sourcePoint"/><mxPoint x="-152" y="1274" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s4" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="5. PUBLISH notif:user:{id}  payload" vertex="1"><mxGeometry height="16" width="230" x="-470" y="1256" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s5" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#4a007a;strokeWidth=2;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-445" y="1302" as="sourcePoint"/><mxPoint x="-13" y="1302" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s5" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="6. PRODUCE notification.events" vertex="1"><mxGeometry height="16" width="210" x="-410" y="1284" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s6r" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-447" y="1330" as="sourcePoint"/><mxPoint x="-595" y="1330" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s6r" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="7. 202 Accepted" vertex="1"><mxGeometry height="16" width="110" x="-545" y="1312" as="geometry"/></mxCell>
+
+        <mxCell id="arr-s7r" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="-595" y="1356" as="sourcePoint"/><mxPoint x="-745" y="1356" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="lbl-s7r" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="8. 202 Accepted" vertex="1"><mxGeometry height="16" width="110" x="-730" y="1338" as="geometry"/></mxCell>
+
+        <mxCell id="seq-note" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#5a3e00;fillColor=#8a5c00;fontColor=#ffffff;rounded=1;" value="Steps 5 &amp; 6 run in PARALLEL.&lt;br&gt;Redis = instant in-app&lt;br&gt;Kafka = durable async delivery" vertex="1"><mxGeometry height="60" width="210" x="-800" y="1380" as="geometry"/></mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             F. SEQUENCE — WS CONNECT
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="f-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="F. Sequence — WebSocket Connect &amp; Receive" vertex="1">
+          <mxGeometry height="24" width="360" x="150" y="1078" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ws-client" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1e6b1e;fontColor=#ffffff;strokeColor=#1a4a1a;fontStyle=1;" value="Client" vertex="1"><mxGeometry height="36" width="90" x="150" y="1108" as="geometry"/></mxCell>
+        <mxCell id="ws-lb" parent="1" style="whiteSpace=wrap;html=1;fillColor=#003070;fontColor=#ffffff;strokeColor=#001a40;fontStyle=1;" value="WS Gateway" vertex="1"><mxGeometry height="36" width="110" x="280" y="1108" as="geometry"/></mxCell>
+        <mxCell id="ws-mgr" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1e6b1e;fontColor=#ffffff;strokeColor=#1a4a1a;fontStyle=1;" value="WS Manager" vertex="1"><mxGeometry height="36" width="110" x="430" y="1108" as="geometry"/></mxCell>
+        <mxCell id="ws-redis" parent="1" style="whiteSpace=wrap;html=1;fillColor=#a30000;fontColor=#ffffff;strokeColor=#6b0000;fontStyle=1;" value="Redis Sub" vertex="1"><mxGeometry height="36" width="100" x="580" y="1108" as="geometry"/></mxCell>
+
+        <mxCell id="wll1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="195" y="1144" as="sourcePoint"/><mxPoint x="195" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wll2" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="335" y="1144" as="sourcePoint"/><mxPoint x="335" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wll3" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="485" y="1144" as="sourcePoint"/><mxPoint x="485" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wll4" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="630" y="1144" as="sourcePoint"/><mxPoint x="630" y="1440" as="targetPoint"/></mxGeometry></mxCell>
+
+        <mxCell id="wa1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="195" y="1168" as="sourcePoint"/><mxPoint x="333" y="1168" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa1l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="1. WS Upgrade + JWT" vertex="1"><mxGeometry height="16" width="145" x="188" y="1150" as="geometry"/></mxCell>
+
+        <mxCell id="wa2" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="335" y="1196" as="sourcePoint"/><mxPoint x="483" y="1196" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa2l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="2. onConnect(socket, userId)" vertex="1"><mxGeometry height="16" width="170" x="313" y="1178" as="geometry"/></mxCell>
+
+        <mxCell id="wa3" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#a30000;strokeWidth=2;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="485" y="1224" as="sourcePoint"/><mxPoint x="628" y="1224" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa3l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="3. SUBSCRIBE notif:user:{id}" vertex="1"><mxGeometry height="16" width="180" x="460" y="1206" as="geometry"/></mxCell>
+
+        <mxCell id="wa4" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="628" y="1252" as="sourcePoint"/><mxPoint x="485" y="1252" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa4l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="4. subscribed OK" vertex="1"><mxGeometry height="16" width="120" x="535" y="1234" as="geometry"/></mxCell>
+
+        <mxCell id="wa5" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#a30000;strokeWidth=2;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="628" y="1294" as="sourcePoint"/><mxPoint x="485" y="1294" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa5l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="5. Redis message arrives" vertex="1"><mxGeometry height="16" width="160" x="528" y="1276" as="geometry"/></mxCell>
+
+        <mxCell id="wa6" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="485" y="1322" as="sourcePoint"/><mxPoint x="337" y="1322" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa6l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="6. socket.emit(notification)" vertex="1"><mxGeometry height="16" width="165" x="382" y="1304" as="geometry"/></mxCell>
+
+        <mxCell id="wa7" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="335" y="1350" as="sourcePoint"/><mxPoint x="197" y="1350" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wa7l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="7. push to browser / app" vertex="1"><mxGeometry height="16" width="148" x="257" y="1332" as="geometry"/></mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             G. WORKER FLOW
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="g-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="G. Worker Execution Logic (Email / SMS / Push)" vertex="1">
+          <mxGeometry height="24" width="360" x="760" y="1078" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wf-start" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;fontColor=#ffffff;strokeColor=none;" value="" vertex="1"><mxGeometry height="24" width="24" x="858" y="1110" as="geometry"/></mxCell>
+        <mxCell id="wf-poll" parent="1" style="whiteSpace=wrap;html=1;fillColor=#003070;fontColor=#ffffff;strokeColor=#001a40;" value="POLL Kafka&lt;br&gt;notification.events" vertex="1"><mxGeometry height="44" width="160" x="790" y="1146" as="geometry"/></mxCell>
+        <mxCell id="wf-idem" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#8a5c00;fontColor=#ffffff;strokeColor=#5a3e00;" value="idem key&lt;br&gt;exists?" vertex="1"><mxGeometry height="60" width="160" x="790" y="1208" as="geometry"/></mxCell>
+        <mxCell id="wf-skip" parent="1" style="whiteSpace=wrap;html=1;fillColor=#a30000;fontColor=#ffffff;strokeColor=#6b0000;" value="ACK + skip&lt;br&gt;(duplicate)" vertex="1"><mxGeometry height="40" width="110" x="985" y="1228" as="geometry"/></mxCell>
+        <mxCell id="wf-pref" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#8a5c00;fontColor=#ffffff;strokeColor=#5a3e00;" value="channel&lt;br&gt;enabled?" vertex="1"><mxGeometry height="60" width="160" x="790" y="1286" as="geometry"/></mxCell>
+        <mxCell id="wf-quiet" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#8a5c00;fontColor=#ffffff;strokeColor=#5a3e00;" value="quiet&lt;br&gt;hours?" vertex="1"><mxGeometry height="60" width="140" x="800" y="1364" as="geometry"/></mxCell>
+        <mxCell id="wf-delay" parent="1" style="whiteSpace=wrap;html=1;fillColor=#4a007a;fontColor=#ffffff;strokeColor=#2e0050;" value="re-enqueue&lt;br&gt;with delay" vertex="1"><mxGeometry height="40" width="120" x="976" y="1381" as="geometry"/></mxCell>
+        <mxCell id="wf-deliver" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1e6b1e;fontColor=#ffffff;strokeColor=#1a4a1a;" value="deliver(notification)&lt;br&gt;SES / Twilio / FCM" vertex="1"><mxGeometry height="44" width="160" x="790" y="1442" as="geometry"/></mxCell>
+        <mxCell id="wf-ok" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#8a5c00;fontColor=#ffffff;strokeColor=#5a3e00;" value="success?" vertex="1"><mxGeometry height="55" width="140" x="800" y="1504" as="geometry"/></mxCell>
+        <mxCell id="wf-ack" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1e6b1e;fontColor=#ffffff;strokeColor=#1a4a1a;" value="ACK offset&lt;br&gt;log status=sent" vertex="1"><mxGeometry height="40" width="130" x="795" y="1577" as="geometry"/></mxCell>
+        <mxCell id="wf-retry" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#a30000;fontColor=#ffffff;strokeColor=#6b0000;" value="attempts&lt;br&gt;&lt; 3?" vertex="1"><mxGeometry height="55" width="130" x="975" y="1503" as="geometry"/></mxCell>
+        <mxCell id="wf-dlq" parent="1" style="whiteSpace=wrap;html=1;fillColor=#a30000;fontColor=#ffffff;strokeColor=#6b0000;" value="Dead Letter&lt;br&gt;Queue (DLQ)" vertex="1"><mxGeometry height="40" width="130" x="975" y="1577" as="geometry"/></mxCell>
+
+        <!-- wf arrows -->
+        <mxCell id="wf-e0" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1134" as="sourcePoint"/><mxPoint x="870" y="1146" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e1" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1190" as="sourcePoint"/><mxPoint x="870" y="1208" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e2" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="950" y="1238" as="sourcePoint"/><mxPoint x="985" y="1248" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e2l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="yes" vertex="1"><mxGeometry height="16" width="30" x="952" y="1226" as="geometry"/></mxCell>
+        <mxCell id="wf-e3" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1268" as="sourcePoint"/><mxPoint x="870" y="1286" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e3l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="no" vertex="1"><mxGeometry height="16" width="30" x="826" y="1268" as="geometry"/></mxCell>
+        <mxCell id="wf-e4" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1346" as="sourcePoint"/><mxPoint x="870" y="1364" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e4l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="yes" vertex="1"><mxGeometry height="16" width="30" x="826" y="1346" as="geometry"/></mxCell>
+        <mxCell id="wf-e4n" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1303" as="sourcePoint"/><mxPoint x="785" y="1303" as="targetPoint"/><Array as="points"><mxPoint x="785" y="1464" /></Array></mxGeometry></mxCell>
+        <mxCell id="wf-e4nl" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="no" vertex="1"><mxGeometry height="16" width="30" x="748" y="1296" as="geometry"/></mxCell>
+        <mxCell id="wf-e5" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="940" y="1394" as="sourcePoint"/><mxPoint x="976" y="1401" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e5l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="yes" vertex="1"><mxGeometry height="16" width="30" x="944" y="1383" as="geometry"/></mxCell>
+        <mxCell id="wf-e6" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1424" as="sourcePoint"/><mxPoint x="870" y="1442" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e6l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="no" vertex="1"><mxGeometry height="16" width="30" x="826" y="1424" as="geometry"/></mxCell>
+        <mxCell id="wf-e7" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1486" as="sourcePoint"/><mxPoint x="870" y="1504" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e8ok" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="870" y="1559" as="sourcePoint"/><mxPoint x="870" y="1577" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e8okl" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="yes" vertex="1"><mxGeometry height="16" width="30" x="826" y="1556" as="geometry"/></mxCell>
+        <mxCell id="wf-e8no" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="940" y="1531" as="sourcePoint"/><mxPoint x="975" y="1531" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e8nol" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="no" vertex="1"><mxGeometry height="16" width="30" x="944" y="1520" as="geometry"/></mxCell>
+        <mxCell id="wf-e9r" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="1040" y="1558" as="sourcePoint"/><mxPoint x="1040" y="1577" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="wf-e9rl" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="no→DLQ" vertex="1"><mxGeometry height="16" width="60" x="1010" y="1558" as="geometry"/></mxCell>
+        <mxCell id="wf-retry-back" parent="1" style="endArrow=block;endFill=1;html=1;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="1105" y="1531" as="sourcePoint"/><mxPoint x="1155" y="1531" as="targetPoint"/><Array as="points"><mxPoint x="1155" y="1464" /><mxPoint x="950" y="1464" /></Array></mxGeometry></mxCell>
+        <mxCell id="wf-retry-backl" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;" value="yes→retry" vertex="1"><mxGeometry height="16" width="80" x="1107" y="1518" as="geometry"/></mxCell>
+
+        <!-- ═══ DIVIDER 2 ═══ -->
+        <mxCell id="div2" parent="1" style="endArrow=none;html=1;strokeWidth=5;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-800" y="1640" as="sourcePoint" />
+            <mxPoint x="1700" y="1640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             H. fanOut pseudo-code
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="h-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="H. NotificationService.fanOut() — Pseudo-code" vertex="1">
+          <mxGeometry height="24" width="400" x="-800" y="1648" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pseudo-fanout" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#333333;fillColor=#1a1a1a;fontColor=#e8e8e8;fontFamily=Courier New;fontSize=11;rounded=0;" value="async fanOut(notification: Notification) {&lt;br&gt;&lt;br&gt;  // 1. Render template&lt;br&gt;  const body = templateEngine.render(&lt;br&gt;    notification.type, notification.channel,&lt;br&gt;    notification.payload, notification.locale&lt;br&gt;  );&lt;br&gt;&lt;br&gt;  // 2. Check preference&lt;br&gt;  const pref = await prefRepo.find(userId, channel);&lt;br&gt;  if (!pref.enabled) return;  // skip channel&lt;br&gt;&lt;br&gt;  // 3. Rate limit check&lt;br&gt;  const key = `rate:${userId}:${channel}`;&lt;br&gt;  const count = await redis.incr(key);&lt;br&gt;  if (count === 1) await redis.expire(key, 60);&lt;br&gt;  if (count &gt; RATE_LIMIT) return;  // throttle&lt;br&gt;&lt;br&gt;  // 4. Publish to Redis Pub/Sub (in-app, real-time)&lt;br&gt;  if (channel === 'in_app') {&lt;br&gt;    await redisPublisher.publish(userId, {&lt;br&gt;      ...notification, body, unread_count&lt;br&gt;    });&lt;br&gt;  }&lt;br&gt;&lt;br&gt;  // 5. Enqueue to Kafka (durable, all channels)&lt;br&gt;  await kafkaProducer.send({&lt;br&gt;    topic: 'notification.events',&lt;br&gt;    messages: [{ key: userId,&lt;br&gt;      value: JSON.stringify({ ...notification, body })&lt;br&gt;    }]&lt;br&gt;  });&lt;br&gt;}" vertex="1">
+          <mxGeometry height="380" width="400" x="-800" y="1678" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             I. PersistWorker pseudo-code
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="i-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="I. PersistWorker.deliver() — Pseudo-code" vertex="1">
+          <mxGeometry height="24" width="360" x="-360" y="1648" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pseudo-persist" parent="1" style="text;html=1;align=left;verticalAlign=top;resizable=0;strokeColor=#333333;fillColor=#1a1a1a;fontColor=#e8e8e8;fontFamily=Courier New;fontSize=11;rounded=0;" value="async deliver(n: Notification) {&lt;br&gt;&lt;br&gt;  // 1. Idempotency guard&lt;br&gt;  const idemKey = `idem:${n.idempotency_key}`;&lt;br&gt;  const already = await redis.set(&lt;br&gt;    idemKey, '1', 'NX', 'EX', 86400&lt;br&gt;  );&lt;br&gt;  if (!already) return;  // duplicate, skip&lt;br&gt;&lt;br&gt;  // 2. Write to Cassandra&lt;br&gt;  await cassandra.execute(`&lt;br&gt;    INSERT INTO notifications (...) VALUES (?)&lt;br&gt;  `, [n.notification_id, n.user_id, ...]);&lt;br&gt;&lt;br&gt;  // 3. Increment unread counter&lt;br&gt;  await redis.incr(`unread:${n.user_id}`);&lt;br&gt;  await redis.expire(`unread:${n.user_id}`, 604800);&lt;br&gt;&lt;br&gt;  // 4. Add to sorted set (hot read path)&lt;br&gt;  const score = Date.now();&lt;br&gt;  await redis.zadd(&lt;br&gt;    `notifs:${n.user_id}`, score, JSON.stringify(n)&lt;br&gt;  );&lt;br&gt;  // Keep only latest 100 entries&lt;br&gt;  await redis.zremrangebyrank(&lt;br&gt;    `notifs:${n.user_id}`, 0, -101&lt;br&gt;  );&lt;br&gt;  await redis.expire(`notifs:${n.user_id}`, 86400);&lt;br&gt;}" vertex="1">
+          <mxGeometry height="340" width="390" x="-360" y="1678" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             J. READ PATH SEQUENCE
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="j-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="J. Read Path — GET /notifications (two-tier cache)" vertex="1">
+          <mxGeometry height="24" width="380" x="100" y="1648" as="geometry" />
+        </mxCell>
+
+        <mxCell id="read-client" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1e6b1e;fontColor=#ffffff;strokeColor=#1a4a1a;fontStyle=1;" value="Client" vertex="1"><mxGeometry height="36" width="80" x="100" y="1678" as="geometry"/></mxCell>
+        <mxCell id="read-gw" parent="1" style="whiteSpace=wrap;html=1;fillColor=#003070;fontColor=#ffffff;strokeColor=#001a40;fontStyle=1;" value="API Gateway" vertex="1"><mxGeometry height="36" width="110" x="222" y="1678" as="geometry"/></mxCell>
+        <mxCell id="read-redis" parent="1" style="whiteSpace=wrap;html=1;fillColor=#a30000;fontColor=#ffffff;strokeColor=#6b0000;fontStyle=1;" value="Redis Cache" vertex="1"><mxGeometry height="36" width="110" x="378" y="1678" as="geometry"/></mxCell>
+        <mxCell id="read-cass" parent="1" style="whiteSpace=wrap;html=1;fillColor=#003070;fontColor=#ffffff;strokeColor=#001a40;fontStyle=1;" value="Cassandra" vertex="1"><mxGeometry height="36" width="110" x="537" y="1678" as="geometry"/></mxCell>
+
+        <mxCell id="rll1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="140" y="1714" as="sourcePoint"/><mxPoint x="140" y="1990" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="rll2" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="277" y="1714" as="sourcePoint"/><mxPoint x="277" y="1990" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="rll3" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="433" y="1714" as="sourcePoint"/><mxPoint x="433" y="1990" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="rll4" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="592" y="1714" as="sourcePoint"/><mxPoint x="592" y="1990" as="targetPoint"/></mxGeometry></mxCell>
+
+        <mxCell id="ra1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="140" y="1740" as="sourcePoint"/><mxPoint x="275" y="1740" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ra1l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="1. GET /notifications?user_id=" vertex="1"><mxGeometry height="16" width="180" x="128" y="1722" as="geometry"/></mxCell>
+
+        <mxCell id="ra2" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#a30000;strokeWidth=2;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="277" y="1768" as="sourcePoint"/><mxPoint x="431" y="1768" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ra2l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="2. ZREVRANGE notifs:{id} 0 19" vertex="1"><mxGeometry height="16" width="190" x="254" y="1750" as="geometry"/></mxCell>
+
+        <mxCell id="ra3-hit" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#1e6b1e;strokeWidth=2;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="431" y="1798" as="sourcePoint"/><mxPoint x="279" y="1798" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ra3-hitl" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="3a. HIT — return 20 notifs" vertex="1"><mxGeometry height="16" width="170" x="310" y="1780" as="geometry"/></mxCell>
+
+        <mxCell id="ra3-miss" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="433" y="1838" as="sourcePoint"/><mxPoint x="590" y="1838" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ra3-missl" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="3b. MISS — SELECT * WHERE user_id" vertex="1"><mxGeometry height="16" width="205" x="393" y="1820" as="geometry"/></mxCell>
+
+        <mxCell id="ra4" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="590" y="1868" as="sourcePoint"/><mxPoint x="433" y="1868" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ra4l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=11;" value="4. rows — warm cache (ZADD)" vertex="1"><mxGeometry height="16" width="178" x="430" y="1850" as="geometry"/></mxCell>
+
+        <mxCell id="ra5" parent="1" style="endArrow=block;endFill=1;html=1;dashed=1;strokeColor=#333333;" edge="1"><mxGeometry relative="1" as="geometry"><mxPoint x="277" y="1908" as="sourcePoint"/><mxPoint x="140" y="1908" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="ra5l" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" value="5. 200 OK  [ notifications + unread_count ]" vertex="1"><mxGeometry height="16" width="240" x="100" y="1890" as="geometry"/></mxCell>
+
+        <!-- ═══════════════════════════════════════════════
+             K. ERROR HANDLING
+        ═══════════════════════════════════════════════ -->
+        <mxCell id="k-hdr" parent="1" style="text;html=1;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;" value="K. Error Handling &amp; Edge Cases" vertex="1">
+          <mxGeometry height="24" width="320" x="760" y="1648" as="geometry" />
+        </mxCell>
+
+        <!-- header row -->
+        <mxCell id="err-head" parent="1" style="whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;strokeColor=#000000;fontStyle=1;align=left;" value="  Scenario                                 |  Handling" vertex="1">
+          <mxGeometry height="30" width="640" x="760" y="1678" as="geometry" />
+        </mxCell>
+
+        <mxCell id="err-r1" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a2e;fontColor=#ccccff;strokeColor=#333366;align=left;" value="  User offline (no WS)                    |  Redis PUBLISH drops silently. Kafka worker delivers async." vertex="1"><mxGeometry height="28" width="640" x="760" y="1708" as="geometry"/></mxCell>
+        <mxCell id="err-r2" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a1a;fontColor=#cccccc;strokeColor=#333333;align=left;" value="  Duplicate publish request               |  idempotency_key SET NX in Redis — skip if key exists." vertex="1"><mxGeometry height="28" width="640" x="760" y="1736" as="geometry"/></mxCell>
+        <mxCell id="err-r3" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a2e;fontColor=#ccccff;strokeColor=#333366;align=left;" value="  Email/SMS provider down                 |  Circuit breaker opens after 5% error rate; pause consumer." vertex="1"><mxGeometry height="28" width="640" x="760" y="1764" as="geometry"/></mxCell>
+        <mxCell id="err-r4" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a1a;fontColor=#cccccc;strokeColor=#333333;align=left;" value="  Kafka consumer lag spike                |  Scale workers horizontally; alert if lag &gt; 10k messages." vertex="1"><mxGeometry height="28" width="640" x="760" y="1792" as="geometry"/></mxCell>
+        <mxCell id="err-r5" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a2e;fontColor=#ccccff;strokeColor=#333366;align=left;" value="  Redis unavailable                       |  WS delivery fails gracefully; Kafka path unaffected." vertex="1"><mxGeometry height="28" width="640" x="760" y="1820" as="geometry"/></mxCell>
+        <mxCell id="err-r6" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a1a;fontColor=#cccccc;strokeColor=#333333;align=left;" value="  Cassandra write fails                   |  Worker nacks; Kafka retries up to 3x then sends to DLQ." vertex="1"><mxGeometry height="28" width="640" x="760" y="1848" as="geometry"/></mxCell>
+        <mxCell id="err-r7" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a2e;fontColor=#ccccff;strokeColor=#333366;align=left;" value="  User disables preference mid-send       |  Worker re-checks pref at delivery time, not only at publish." vertex="1"><mxGeometry height="28" width="640" x="760" y="1876" as="geometry"/></mxCell>
+        <mxCell id="err-r8" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a1a;fontColor=#cccccc;strokeColor=#333333;align=left;" value="  Quiet hours edge (midnight boundary)    |  Re-queue with delivery_after timestamp; SQS delay queue." vertex="1"><mxGeometry height="28" width="640" x="760" y="1904" as="geometry"/></mxCell>
+        <mxCell id="err-r9" parent="1" style="whiteSpace=wrap;html=1;fillColor=#1a1a2e;fontColor=#ccccff;strokeColor=#333366;align=left;" value="  Notification flood (promo blast)        |  Per-user Redis rate limiter + batch-publish with back-off." vertex="1"><mxGeometry height="28" width="640" x="760" y="1932" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
